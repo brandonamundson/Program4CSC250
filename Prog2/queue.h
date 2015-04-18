@@ -17,8 +17,7 @@ template <class _TY>
 class myqueue
 {
 public:
-    myqueue<_TY>();
-    myqueue<_TY>(myqueue<_TY> &s);
+    myqueue();
     ~myqueue();
     bool isEmpty();
     bool push(_TY item);
@@ -36,7 +35,7 @@ private:
     node *tailptr;
 };
 template <class _TY>
-myqueue::myqueue<_TY>()
+myqueue<_TY>::myqueue()
 {
     headptr = new (nothrow)node;
     if (headptr == nullptr)
@@ -55,7 +54,7 @@ myqueue::myqueue<_TY>()
 }
 
 template <class _TY>
-myqueue::~myqueue()
+myqueue<_TY>::~myqueue()
 {
     delete[] headptr;
     headptr = nullptr;
@@ -65,13 +64,13 @@ myqueue::~myqueue()
 }
 
 template <class _TY>
-bool myqueue::isEmpty()
+bool myqueue<_TY>::isEmpty()
 {
     return (headptr == nullptr ? true : false)
 }
 
 template <class _TY>
-bool myqueue::push(_TY item)
+bool myqueue<_TY>::push(_TY item)
 {
     node *temp;
     node *curr;
@@ -95,7 +94,7 @@ bool myqueue::push(_TY item)
 }
 
 template <class _TY>
-bool myqueue::pop(_TY &item)
+bool myqueue<_TY>::pop(_TY &item)
 {
     node *temp;
     node *prev;
@@ -111,7 +110,7 @@ bool myqueue::pop(_TY &item)
 }
 
 template <class _TY>
-bool myqueue::top(_TY &item)
+bool myqueue<_TY>::top(_TY &item)
 {
     if (headptr == nullptr)
         return false;
@@ -120,7 +119,7 @@ bool myqueue::top(_TY &item)
 }
 
 template <class _TY>
-int myqueue::size()
+int myqueue<_TY>::size()
 {
     return count;
 }
