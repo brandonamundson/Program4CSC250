@@ -1,7 +1,16 @@
 #pragma once
 
 #define _CRT_SECURE_NO_DEPRECATE
+
+#include <time.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <cctype>
+#include <cstring>
+#include <iomanip>
+#include <cstdlib>
+
 using namespace std;
 
 template <class _TY>
