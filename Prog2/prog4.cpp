@@ -1,9 +1,5 @@
 #include "queue.h"
 
-int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage);
-bool openFiles(bool random, ifstream &arrival, ifstream &pages);
-void getData(bool generateRandom, int avgInput, int secondsPerPage, int &numPages, int &arrivalTime, ifstream &arrivalFile, ifstream &pageFile);
-void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs);
 
 int main(int argc, char *argv[])
 {
