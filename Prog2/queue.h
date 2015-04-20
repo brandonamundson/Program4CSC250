@@ -2,6 +2,7 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+//libraries
 #include <time.h>
 #include <iostream>
 #include <fstream>
@@ -14,7 +15,7 @@
 using namespace std;
 
 
-
+//template class
 template <class _TY>
 class myqueue
 {
@@ -37,6 +38,7 @@ private:
     node *tailptr;
 };
 
+//document info
 struct document
 {
     int pages;
@@ -51,9 +53,11 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages);
 void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile);
 void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs);
 
+//constructor
 template <class _TY>
 myqueue<_TY>::myqueue()
 {
+	//assigning initial values to headptr, tailptr, and count
     headptr = new (nothrow)node;
     if (headptr == nullptr)
         return;
@@ -70,33 +74,41 @@ myqueue<_TY>::myqueue()
 
 }
 
+//destructor
 template <class _TY>
 myqueue<_TY>::~myqueue()
 {
+	//freeing memory
     delete[] headptr;
     headptr = nullptr;
     headptr->next = nullptr;
     tailptr = nullptr;
     tailptr->next = nullptr;
+	//Shouldn't tailptr be freed up too?
 }
 
+//Empty function
 template <class _TY>
 bool myqueue<_TY>::isEmpty()
 {
     return (headptr == nullptr ? true : false)
 }
 
+//push
 template <class _TY>
 bool myqueue<_TY>::push(_TY item)
 {
+	//nodes created
     node *temp;
     node *curr;
     node *prev;
+	//error check and initial assignment for temp
     temp = new (nothrow)node;
     if (temp == nullptr)
         return false;
     temp->next = nullptr;
     temp->item = item;
+	//if empty
     if (headptr == nullptr)
     {
         headptr = temp;
@@ -104,39 +116,53 @@ bool myqueue<_TY>::push(_TY item)
         count += 1;
         return true;
     }
+	//if not empty
     tailptr->next = temp;
     tailptr = temp;
     count += 1;
     return true;
+	//what are curr and prev even for?
+	//Shouldn't curr and prev also have an error check and initial assignment?
 }
 
+//pop
 template <class _TY>
 bool myqueue<_TY>::pop(_TY &item)
 {
+	//nodes created
     node *temp;
     node *prev;
     node *curr;
+	//if empty
     if (headptr == nullptr)
         return false;
+	//if not empty
     temp = headptr;
     headptr = headptr->next;
     item = temp->item;
     delete[] temp;
     count -= 1;
     return true;
+	//shouldn't there be an error check and/or nothrow for temp?
+	//what are prev and curr for?
 }
 
+//top
 template <class _TY>
 bool myqueue<_TY>::top(_TY &item)
 {
+	//if empty
     if (headptr == nullptr)
         return false;
+	//if not empty
     item = headptr->item;
     return true;
 }
 
+//size
 template <class _TY>
 int myqueue<_TY>::size()
 {
+	//gives count
     return count;
 }
