@@ -57,7 +57,7 @@ void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs);
 template <class _TY>
 myqueue<_TY>::myqueue()
 {
-	//assigning initial values to headptr, tailptr, and count
+    //assigning initial values to headptr, tailptr, and count
     headptr = new (nothrow)node;
     if (headptr == nullptr)
         return;
@@ -78,13 +78,13 @@ myqueue<_TY>::myqueue()
 template <class _TY>
 myqueue<_TY>::~myqueue()
 {
-	//freeing memory
+    //freeing memory
     delete[] headptr;
+    delete[] tailptr;
     headptr = nullptr;
     headptr->next = nullptr;
     tailptr = nullptr;
     tailptr->next = nullptr;
-	//Shouldn't tailptr be freed up too?
 }
 
 //Empty function
@@ -98,17 +98,15 @@ bool myqueue<_TY>::isEmpty()
 template <class _TY>
 bool myqueue<_TY>::push(_TY item)
 {
-	//nodes created
+    //nodes created
     node *temp;
-    node *curr;
-    node *prev;
-	//error check and initial assignment for temp
+    //error check and initial assignment for temp
     temp = new (nothrow)node;
     if (temp == nullptr)
         return false;
     temp->next = nullptr;
     temp->item = item;
-	//if empty
+    //if empty
     if (headptr == nullptr)
     {
         headptr = temp;
@@ -116,45 +114,43 @@ bool myqueue<_TY>::push(_TY item)
         count += 1;
         return true;
     }
-	//if not empty
+    //if not empty
     tailptr->next = temp;
     tailptr = temp;
     count += 1;
     return true;
-	//what are curr and prev even for?
-	//Shouldn't curr and prev also have an error check and initial assignment?
 }
 
 //pop
 template <class _TY>
 bool myqueue<_TY>::pop(_TY &item)
 {
-	//nodes created
+    //nodes created
     node *temp;
-    node *prev;
-    node *curr;
-	//if empty
+    //if empty
     if (headptr == nullptr)
         return false;
-	//if not empty
+    //if not empty
     temp = headptr;
     headptr = headptr->next;
     item = temp->item;
     delete[] temp;
     count -= 1;
     return true;
-	//shouldn't there be an error check and/or nothrow for temp?
-	//what are prev and curr for?
+    /*shouldn't there be an error check and/or nothrow for temp?
+    No because we are deleting and just need temp to hold the original headptr
+    we are not creating a new node as much as we are temporarily holding it while
+    we shift headptr to remove the original headptr.*/
 }
 
 //top
 template <class _TY>
 bool myqueue<_TY>::top(_TY &item)
 {
-	//if empty
+    //if empty
     if (headptr == nullptr)
         return false;
-	//if not empty
+    //if not empty
     item = headptr->item;
     return true;
 }
@@ -163,6 +159,6 @@ bool myqueue<_TY>::top(_TY &item)
 template <class _TY>
 int myqueue<_TY>::size()
 {
-	//gives count
+    //gives count
     return count;
 }
