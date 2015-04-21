@@ -78,13 +78,31 @@ myqueue<_TY>::myqueue()
 template <class _TY>
 myqueue<_TY>::~myqueue()
 {
-    //freeing memory
-    delete[] headptr;
-    delete[] tailptr;
-    headptr = nullptr;
-    headptr->next = nullptr;
-    tailptr = nullptr;
-    tailptr->next = nullptr;
+node *curr;
+node *next;
+
+curr = headptr;
+next = headptr;
+
+while (curr != nullptr)
+    {
+
+    node *temp = headptr;
+    node *next = headptr;
+
+    //walk through nodes freeing up memory
+    while (temp != nullptr)
+        {
+        next = temp->next;
+        delete temp;
+        temp = next;
+        }
+    delete headptr;
+    delete tailptr;
+
+    }
+
+
 }
 
 //Empty function
