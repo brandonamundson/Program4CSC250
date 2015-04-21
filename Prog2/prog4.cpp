@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 
     }
     //? I'll need this to be explained. This method seems irregular.
+    //What do you mean?  This is how he wrote the output in the prog 4 assignment
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs);
 
     if (generateRandom == false)
@@ -88,6 +89,8 @@ int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &
         return 1;//incorrect number of arguments
     }
     //what is all this?
+    //this is how you catch an invalid conversion. If the string is not able
+    // to be converted it throws an exception.
     try
     {
         avgInput = stol(argv[1]);
