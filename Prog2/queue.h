@@ -63,13 +63,11 @@ myqueue<_TY>::myqueue()
         return;
     headptr = nullptr;
     headptr->next = nullptr;
-    headptr->item = 0;
     tailptr = new (nothrow)node;
     if (tailptr == nullptr)
         return;
     tailptr = nullptr;
     tailptr->next = nullptr;
-    tailptr->item = 0;
     count = 0;
 
 }
