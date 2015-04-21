@@ -78,15 +78,6 @@ myqueue<_TY>::myqueue()
 template <class _TY>
 myqueue<_TY>::~myqueue()
 {
-node *curr;
-node *next;
-
-curr = headptr;
-next = headptr;
-
-while (curr != nullptr)
-    {
-
     node *temp = headptr;
     node *next = headptr;
 
@@ -99,10 +90,6 @@ while (curr != nullptr)
         }
     delete headptr;
     delete tailptr;
-
-    }
-
-
 }
 
 //Empty function
