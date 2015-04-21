@@ -23,8 +23,8 @@ public:
     myqueue();
     ~myqueue();
     bool isEmpty();
-    bool push(_TY item);
-    bool pop(_TY &item);
+    bool enqueue(_TY item);
+    bool dequeue(_TY &item);
     bool top(_TY &item);
     int size();
 private:
@@ -114,7 +114,7 @@ bool myqueue<_TY>::isEmpty()
 
 //push
 template <class _TY>
-bool myqueue<_TY>::push(_TY item)
+bool myqueue<_TY>::enqueue(_TY item)
 {
     //nodes created
     node *temp;
@@ -141,7 +141,7 @@ bool myqueue<_TY>::push(_TY item)
 
 //pop
 template <class _TY>
-bool myqueue<_TY>::pop(_TY &item)
+bool myqueue<_TY>::dequeue(_TY &item)
 {
     //nodes created
     node *temp;
