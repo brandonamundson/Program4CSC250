@@ -62,12 +62,10 @@ myqueue<_TY>::myqueue()
     if (headptr == nullptr)
         return;
     headptr = nullptr;
-    headptr->next = nullptr;
     tailptr = new (nothrow)node;
     if (tailptr == nullptr)
         return;
     tailptr = nullptr;
-    tailptr->next = nullptr;
     count = 0;
 
 }
