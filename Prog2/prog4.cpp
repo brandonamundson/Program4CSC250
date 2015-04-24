@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     int timeToPrint;
     int error;
     document doc;
-    myqueue<document> q1;
+    myqueue<document> documentQueue;
     srand((int)time(NULL));
 
     //sets error to value depending on whether invalid arguments were given in command line or not
@@ -41,29 +41,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    while (clock < 28800)
-    {
-        getData(generateRandom, avgInput, secondsPerPage, doc, arrivalFile, pageFile);
+    
+    //INSERT LOOP FUNCTION HERE
 
-        timeBetweenPrintJobs = (doc.time_arrived - (lastPageCount * secondsPerPage));
-        timeToPrint = (doc.pages * secondsPerPage);
-
-        // this works even when clock is zero
-        if (timeBetweenPrintJobs >= 0)
-        {
-            idleTime += timeBetweenPrintJobs;
-            clock += timeBetweenPrintJobs;
-        }
-
-        clock += timeToPrint;
-        //arrivalTime;
-        //numPages;
-        lastPageCount = doc.pages;
-        lastArrivalTime = doc.time_arrived;
-
-        numOfDocs++;
-
-    }
     //? I'll need this to be explained. This method seems irregular.
     //What do you mean?  This is how he wrote the output in the prog 4 assignment
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs);
@@ -78,6 +58,68 @@ int main(int argc, char *argv[])
     return 0;
 
 }
+
+
+void simulatePrinting(int &docsPrinted, int &idleTime, int secsPerPage,
+   int averageInput, bool genRandom, myqueue<document> &documentQueue, ifstream arrivalFile, ifstream pageFile)
+    {
+
+    document currentDoc;
+	document topDoc;
+    
+    int clock = 0;
+    //set to time dequeued each loop
+    int previousTimePrinted = 0;
+	int numberOfDocs;
+	int timeDequeued = 0;
+
+    while (clock <= 28800)
+        {
+        getData(genRandom, averageInput, secsPerPage, currentDoc, arrivalFile, pageFile);
+
+            //new file in - old file out
+            if (documentQueue.isEmpty())
+                idleTime += currentDoc.time_arrived - previousTimePrinted;
+        
+            documentQueue.enqueue(currentDoc);
+			numberOfDocs++;
+						
+			documentQueue.top(topDoc);
+			while (clock >= (topDoc.time_started_print + (topDoc.pages * secsPerPage)))
+				{
+
+
+
+
+				}
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //error check for command line
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage)
