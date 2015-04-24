@@ -85,8 +85,7 @@ myqueue<_TY>::~myqueue()
         delete temp;
         temp = next;
         }
-    delete headptr;
-    delete tailptr;
+   
 }
 
 //Empty function
