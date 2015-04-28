@@ -1,7 +1,5 @@
 #pragma once
-
 #define _CRT_SECURE_NO_DEPRECATE
-
 //libraries
 #include <time.h>
 #include <iostream>
@@ -11,7 +9,6 @@
 #include <cstring>
 #include <iomanip>
 #include <cstdlib>
-
 using namespace std;
 
 
@@ -49,10 +46,10 @@ struct document
 };
 
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage);
-void simulatePrinting(int &docsPrinted, int &idleTime, int &docsLeft);
 bool openFiles(bool random, ifstream &arrival, ifstream &pages);
-void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile);
-void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs);
+void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile, int &timeOfLastDoc);
+void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, int size);
+void closeFiles(ifstream &arrival, ifstream &pages);
 
 //constructor
 template <class _TY>
@@ -68,7 +65,6 @@ myqueue<_TY>::myqueue()
         return;
     tailptr = nullptr;
     count = 0;
-
 }
 
 //destructor
@@ -80,19 +76,18 @@ myqueue<_TY>::~myqueue()
 
     //walk through nodes freeing up memory
     while (temp != nullptr)
-        {
+    {
         next = temp->next;
         delete temp;
         temp = next;
-        }
-   
+    }
 }
 
 //Empty function
 template <class _TY>
 bool myqueue<_TY>::isEmpty()
 {
-    return (headptr == nullptr ? true : false)
+    return (headptr == nullptr ? true : false);
 }
 
 //push
@@ -138,10 +133,6 @@ bool myqueue<_TY>::dequeue(_TY &item)
     delete[] temp;
     count -= 1;
     return true;
-    /*shouldn't there be an error check and/or nothrow for temp?
-    No because we are deleting and just need temp to hold the original headptr
-    we are not creating a new node as much as we are temporarily holding it while
-    we shift headptr to remove the original headptr.*/
 }
 
 //top

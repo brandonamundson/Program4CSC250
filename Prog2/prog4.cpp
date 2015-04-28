@@ -2,7 +2,6 @@
 
 int main(int argc, char *argv[])
 {
-    //variables
     bool generateRandom = false;
     ifstream arrivalFile;
     ifstream pageFile;
@@ -11,13 +10,11 @@ int main(int argc, char *argv[])
     int idleTime = 0;
     int numOfDocs = 0;
     int clock = 0;
-    int lastArrivalTime = 0;
-    int lastPageCount = 0;
-    int timeBetweenPrintJobs;
-    int timeToPrint;
     int error;
-    document doc;
-    myqueue<document> documentQueue;
+    int timeDequeued = 0;
+    int endPrint = 0;
+    document currDoc;
+    myqueue<document> q1;
     srand((int)time(NULL));
 
     //sets error to value depending on whether invalid arguments were given in command line or not
@@ -25,101 +22,49 @@ int main(int argc, char *argv[])
     // if an error was found
     if (error != 0)
     {
-        cout << "Please run as prog4.exe, time that documents arrive on average, "
-             << "number of seconds to print document,"
-             << "and whether to use randomly generated times and pages or "
-             << "to use provided files from arrivals.rand and pages.rand" << endl;
+        cout << "Please run as prog4.exe, time that documents arrive on "
+             << "average, number of seconds to print document, and whether to "
+             << "use randomly generated times and pages or to use provided "
+             << "files from arrivals.rand and pages.rand" << endl;
         return error;
     }
-    if (generateRandom == false)
+    if (!generateRandom && !openFiles(generateRandom, arrivalFile, pageFile))
     {
-        if (openFiles(generateRandom, arrivalFile, pageFile) == false)
+        return 3;//unable to open files
+    }
+
+    while (clock < 28800)
+    {
+        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
+        if (q1.isEmpty())
+            idleTime += clock - endPrint;
+        q1.enqueue(currDoc);
+        q1.top(currDoc);
+        if (numOfDocs == 0)
+            currDoc.time_started_print = currDoc.time_arrived;
+        else
+            currDoc.time_started_print = timeDequeued;
+        endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
+        while (endPrint < clock)
         {
-            return 3;//unable to open files
-            //need to tell user that the files didn't open
-            //it is done inside of the openFiles function
+            q1.dequeue(currDoc);
+            timeDequeued = endPrint;
+            numOfDocs++;
+            q1.top(currDoc);
+            currDoc.time_started_print = endPrint;
+            endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
         }
     }
 
-    
-    //INSERT LOOP FUNCTION HERE
+    printStats(avgInput, secondsPerPage, idleTime, numOfDocs, q1.size());
 
-    //? I'll need this to be explained. This method seems irregular.
-    //What do you mean?  This is how he wrote the output in the prog 4 assignment
-    printStats(avgInput, secondsPerPage, idleTime, numOfDocs);
-
-    if (generateRandom == false)
+    if (!generateRandom)
     {
-        //closing files
-        arrivalFile.close();
-        pageFile.close();
+        closeFiles(arrivalFile, pageFile);
     }
     //program completed
     return 0;
-
 }
-
-
-void simulatePrinting(int &docsPrinted, int &idleTime, int secsPerPage,
-   int averageInput, bool genRandom, myqueue<document> &documentQueue, ifstream arrivalFile, ifstream pageFile)
-    {
-
-    document currentDoc;
-	document topDoc;
-    
-    int clock = 0;
-    //set to time dequeued each loop
-    int previousTimePrinted = 0;
-	int numberOfDocs;
-	int timeDequeued = 0;
-
-    while (clock <= 28800)
-        {
-        getData(genRandom, averageInput, secsPerPage, currentDoc, arrivalFile, pageFile);
-
-            //new file in - old file out
-            if (documentQueue.isEmpty())
-                idleTime += currentDoc.time_arrived - previousTimePrinted;
-        
-            documentQueue.enqueue(currentDoc);
-			numberOfDocs++;
-						
-			documentQueue.top(topDoc);
-			while (clock >= (topDoc.time_started_print + (topDoc.pages * secsPerPage)))
-				{
-
-
-
-
-				}
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //error check for command line
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage)
@@ -130,9 +75,7 @@ int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &
         cout << "Incorrect Number of arguments" << endl;
         return 1;//incorrect number of arguments
     }
-    //what is all this?
-    //this is how you catch an invalid conversion. If the string is not able
-    // to be converted it throws an exception.
+
     try
     {
         avgInput = stol(argv[1]);
@@ -151,6 +94,7 @@ int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &
         cout << argv[2] << " is not a valid command line argument" << endl;
         return 2;//invalid command line arguments
     }
+
     //if -r or -f are used
     if (strcmp(argv[3], "-r") == 0 || strcmp(argv[3], "-f") == 0)
     {
@@ -191,7 +135,7 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages)
     return true;
 }
 
-void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile)
+void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile, int &clock)
 {
     //upper and lower bounds
     int min = avgInput - 30;
@@ -211,15 +155,22 @@ void getData(bool generateRandom, int avgInput, int secondsPerPage, document &do
         pageFile >> doc.pages;
     }
     //setting value within bounds
-    doc.time_arrived = (doc.time_arrived % (max - min + 1)) + (min);
+    doc.time_arrived = ((doc.time_arrived % (max - min + 1)) + (min)) + clock;
+    clock = doc.time_arrived;
     doc.pages = (doc.pages % (maxPages - minPages + 1)) + (minPages);
 }
 
-void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs)
+void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, int size)
 {
     cout << "Number of seconds between printing documents (arrival): " << avgInput << endl;
     cout << "Number of seconds to print a page: " << secondsPerPage << endl;
     cout << "Documents printed: " << numOfDocs << endl;
     cout << "Number of seconds printer idle: " << idleTime << endl;
+    cout << "Number of documents still in queue: " << size << endl;
 }
 
+void closeFiles(ifstream &arrival, ifstream &pages)
+{        //closing files
+    arrival.close();
+    pages.close();
+}
