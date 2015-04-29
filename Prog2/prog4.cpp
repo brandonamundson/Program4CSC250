@@ -2,15 +2,15 @@
 
 int main(int argc, char *argv[])
 {
-    bool generateRandom = false;
     ifstream arrivalFile;
     ifstream pageFile;
+    bool generateRandom = false;
     int avgInput;
     int secondsPerPage;
+    int error;
     int idleTime = 0;
     int numOfDocs = 0;
     int clock = 0;
-    int error;
     int timeDequeued = 0;
     int endPrint = 0;
     document currDoc;
@@ -29,9 +29,7 @@ int main(int argc, char *argv[])
         return error;
     }
     if (!generateRandom && !openFiles(generateRandom, arrivalFile, pageFile))
-    {
         return 3;//unable to open files
-    }
 
     while (clock < 28800)
     {
@@ -40,7 +38,7 @@ int main(int argc, char *argv[])
             idleTime += clock - endPrint;
         q1.enqueue(currDoc);
         q1.top(currDoc);
-        if (numOfDocs == 0)
+        if (q1.size() == 1)
             currDoc.time_started_print = currDoc.time_arrived;
         else
             currDoc.time_started_print = timeDequeued;
@@ -59,9 +57,7 @@ int main(int argc, char *argv[])
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs, q1.size());
 
     if (!generateRandom)
-    {
         closeFiles(arrivalFile, pageFile);
-    }
     //program completed
     return 0;
 }
@@ -131,7 +127,6 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages)
             return false;
         }
     }
-
     return true;
 }
 
@@ -170,7 +165,7 @@ void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, i
 }
 
 void closeFiles(ifstream &arrival, ifstream &pages)
-{        //closing files
+{
     arrival.close();
     pages.close();
 }
