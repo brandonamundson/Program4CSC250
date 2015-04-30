@@ -1,5 +1,7 @@
+//Jake Davidson to do file header
 #include "queue.h"
 
+//Jake Davidson to comment
 int main(int argc, char *argv[])
 {
     bool generateRandom = false;
@@ -110,6 +112,7 @@ void simulatePrint(int &idleTime, int secondsPerPage, int avgInput,
 
 
 //error check for command line
+//Jake Davidson to comment
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage)
 {
     //if there weren't 3 arguments added to the program
@@ -204,6 +207,7 @@ void getData(bool generateRandom, int avgInput, int secondsPerPage, document &do
     doc.pages = (doc.pages % (maxPages - minPages + 1)) + (minPages);
 }
 
+//Jake Davidson to comment
 void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, int size)
 {
     cout << "Number of seconds between printing documents (arrival): " << avgInput << endl;
