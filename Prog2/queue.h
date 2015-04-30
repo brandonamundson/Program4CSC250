@@ -1,6 +1,8 @@
+/*************************************************************************//**
+ * @file
+ *****************************************************************************/
 #pragma once
 #define _CRT_SECURE_NO_DEPRECATE
-//libraries
 #include <time.h>
 #include <iostream>
 #include <fstream>
@@ -12,50 +14,87 @@
 using namespace std;
 
 
-//template class
+/**
+* @brief This is the template queue class that is able to hold any type of item
+         needed.  This queue is implemented with a node structure that holds the
+         item and a pointer to the next node in the queue.  In this program, the
+         queue will be used to hold a document structure to simulate a printing
+         queue.
+*/
 template <class _TY>
 class myqueue
 {
 public:
-    myqueue();
-    ~myqueue();
-    bool isEmpty();
-    bool enqueue(_TY item);
-    bool dequeue(_TY &item);
-    bool top(_TY &item);
-    int size();
+    myqueue();/*!< The constructor of the queue*/
+    ~myqueue();/*!< The destructor of the queue*/
+    bool isEmpty();/*!< The isEmpty function of the queue used to see if the queue isEmpty
+                        before inserting items.
+                        @returns true - if the queue is empty
+                        @returns false - If the queue is not empty*/
+    bool enqueue(_TY item);/*!< The enqueue function of the queue used to insert
+                                items as needed.
+                                @param item - this is the item that is to be
+                                              inserted into the queue
+                                @returns true - if it inserted the item
+                                @return  false - if it could not insert the item*/
+    bool dequeue(_TY &item);/*!< The remove function of the queue used to remove
+                                 items as needed.
+                                 @param item this is the item that is to be
+                                        removed from the queue
+                                 @returns true - successfully deleted an item.
+                                 @returns false - item could not be deleted.*/
+    bool top(_TY &item);/*!< The function that allows users access to the first
+                             item in the queue without it being removed from the
+                             queue.
+                             @param - item this is the item that is in the front
+                                      of the queue.
+                             @returns - true if headptr->item was copied to item
+                             @returns - false if the list is empty*/
+    int size();/*!< The size function of the queue used to count the number of items
+                    in the queue.
+                    @returns count - the number of items in the queue.*/
 private:
-    int count;
+    int count;/*!< Count Variable to keep track of number of items in the queue*/
+    /*!
+    * @brief Holds item and pointer to next node.
+    */
     struct node
     {
-        node *next;
-        _TY item;
+        node *next;/*!< Next word in the queue*/
+        _TY item;/*!< Item of the node */
     };
-    node *headptr;
-    node *tailptr;
+    node *headptr;/*!< First node in the queue.  This allows access to other nodes in queue*/
+    node *tailptr;/*!< Last node in the queue.  This allows access to the last node in queue*/
 };
 
-//document info
+/*!
+* @brief This is the document structure that simulates everything needed to print
+         a document.
+*/
 struct document
 {
-    int pages;
-    int time_arrived;
-    int time_dequeued;
-    int time_started_print;
-    int time_end_printing;
+    int pages;/*!< number of pages in the document*/
+    int time_arrived;/*!< The time the document arrived*/
+    int time_dequeued;/*!< The time the document will be dequeued*/
+    int time_started_print;/*!< The time the document will start printing*/
+    int time_end_printing;/*!< The time the document will finish printing*/
 };
 
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage);
 bool openFiles(bool random, ifstream &arrival, ifstream &pages);
-void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile, int &timeOfLastDoc);
+void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile);
 void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, int size);
 void closeFiles(ifstream &arrival, ifstream &pages);
 
-//constructor
+/**************************************************************************//**
+ * @author Brandon Amundson
+ *
+ * @par Description:
+ * This function creates/starts the queue by setting the queue to nullptr
+ *****************************************************************************/
 template <class _TY>
 myqueue<_TY>::myqueue()
 {
-    //assigning initial values to headptr, tailptr, and count
     headptr = new (nothrow)node;
     if (headptr == nullptr)
         return;
@@ -67,14 +106,18 @@ myqueue<_TY>::myqueue()
     count = 0;
 }
 
-//destructor
+/**************************************************************************//**
+ * @author Brandon Amundson, Jake Davidson
+ *
+ * @par Description:
+ * This function deletes every member of the queue.
+ *****************************************************************************/
 template <class _TY>
 myqueue<_TY>::~myqueue()
 {
     node *temp = headptr;
     node *next = headptr;
 
-    //walk through nodes freeing up memory
     while (temp != nullptr)
     {
         next = temp->next;
@@ -83,26 +126,45 @@ myqueue<_TY>::~myqueue()
     }
 }
 
-//Empty function
+
+/**************************************************************************//** 
+ * @author Brandon Amundson
+ * 
+ * @par Description: 
+ *
+ * Checks to see if the queue is empty by checking to see if headptr is set to
+ * nullptr.
+ * 
+ * @returns true - if the queue is empty
+ * @returns false - If the queue is not empty
+ *****************************************************************************/
 template <class _TY>
 bool myqueue<_TY>::isEmpty()
 {
     return (headptr == nullptr ? true : false);
 }
 
-//push
+/**************************************************************************//** 
+ * @author Brandon Amundson
+ * 
+ * @par Description: 
+ * Inserts item into the queue at the end of the queue and returns true or false
+ * based on whether the insert was successful or not.
+ * 
+ * @param[in]      item - item that will be inserted into the lsit
+ * 
+ * @returns true - if it inserted the item
+ * @return  false - if it could not insert the item
+ *****************************************************************************/
 template <class _TY>
 bool myqueue<_TY>::enqueue(_TY item)
 {
-    //nodes created
     node *temp;
-    //error check and initial assignment for temp
     temp = new (nothrow)node;
     if (temp == nullptr)
         return false;
     temp->next = nullptr;
     temp->item = item;
-    //if empty
     if (headptr == nullptr)
     {
         headptr = temp;
@@ -110,23 +172,31 @@ bool myqueue<_TY>::enqueue(_TY item)
         count += 1;
         return true;
     }
-    //if not empty
     tailptr->next = temp;
     tailptr = temp;
     count += 1;
     return true;
 }
 
-//pop
+/***************************************************************************//**
+ * @author Brandon Amundson
+ *
+ * @par Description:
+ * This is the remove function of the queue.  It is used when needing to
+ * delete an item from the queue.
+ *
+ * @param[in,out]        item - the item that is being removed from the queue,
+ *                          passed back to user for use.
+ *
+ * @returns true - successfully deleted item from queue.
+ * @returns false - could not delete item from queue because queue is empty
+ ******************************************************************************/
 template <class _TY>
 bool myqueue<_TY>::dequeue(_TY &item)
 {
-    //nodes created
     node *temp;
-    //if empty
     if (headptr == nullptr)
         return false;
-    //if not empty
     temp = headptr;
     headptr = headptr->next;
     item = temp->item;
@@ -135,22 +205,39 @@ bool myqueue<_TY>::dequeue(_TY &item)
     return true;
 }
 
-//top
+/**************************************************************************//** 
+ * @author Brandon Amundson
+ * 
+ * @par Description: 
+ * Returns the first item in the queue to the user for later use.
+ * 
+ * @param[in,out] item - this is the first item in the queue that is passed back
+ *                       to the user to allow them access to the front of the
+ *                       queue without having to dequeue.
+ *
+ * @returns true - if we were able to set item to headptr->item
+ * @returns false - If the queue is empty and there is nothing to return to user.
+ *****************************************************************************/
 template <class _TY>
 bool myqueue<_TY>::top(_TY &item)
 {
-    //if empty
     if (headptr == nullptr)
         return false;
-    //if not empty
     item = headptr->item;
     return true;
 }
 
-//size
+ /**************************************************************************//**
+* @author Brandon Amundson
+*
+* @par Description:
+* This function returns the count variable of the private class data.  The count
+* keeps track of the number of items in the queue.
+* 
+* @returns count - the number of words in the queue.  
+*****************************************************************************/
 template <class _TY>
 int myqueue<_TY>::size()
 {
-    //gives count
     return count;
 }

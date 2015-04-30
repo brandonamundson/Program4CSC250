@@ -13,6 +13,9 @@ int main(int argc, char *argv[])
     int error;
     int timeDequeued = 0;
     int endPrint = 0;
+    int prevArrived = 0;
+    int idle = 0;
+    int finishDoc = 0;
     document currDoc;
     document deqDoc;
     myqueue<document> q1;
@@ -30,22 +33,16 @@ int main(int argc, char *argv[])
         return error;
     }
     if (!generateRandom && !openFiles(generateRandom, arrivalFile, pageFile))
-    {
         return 3;//unable to open files
-    }
-    int prevArrived = 0;
-    int idle = 0;
-    int finishDoc = 0;
+
     //program loop
     while (clock < 28800)
     {
         //enters previous document's arrival time
         if (clock != 0)
-        {
             prevArrived = currDoc.time_arrived;
-        }
         //getting data of next doc
-        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
+        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile);
         //getting actual time_arrived
         currDoc.time_arrived = currDoc.time_arrived + prevArrived;
         //still need to fix idle time
@@ -55,17 +52,13 @@ int main(int argc, char *argv[])
             idle = currDoc.time_arrived - clock;
         }
         //if queue is empty
-        if (q1.size() == 0)
-        {
+        if (q1.isEmpty())
             currDoc.time_started_print = currDoc.time_arrived;
-        }
         //if queue is not empty
         if (q1.size() > 0)
         {
             if (currDoc.time_arrived < endPrint)
-            {
                 currDoc.time_started_print = endPrint;
-            }
             else
                 currDoc.time_started_print = endPrint + idle;
         }
@@ -76,7 +69,7 @@ int main(int argc, char *argv[])
             timeDequeued = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
         }
         //Dequeue Loop
-        while ((timeDequeued < currDoc.time_started_print) && (q1.size() > 0))
+        while ((timeDequeued < currDoc.time_started_print) && (!q1.isEmpty()))
         {
             q1.dequeue(deqDoc);
             numOfDocs++;
@@ -94,9 +87,7 @@ int main(int argc, char *argv[])
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs, q1.size());
 
     if (!generateRandom)
-    {
         closeFiles(arrivalFile, pageFile);
-    }
     //program completed
     return 0;
 }
@@ -170,7 +161,7 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages)
     return true;
 }
 
-void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile, int &clock)
+void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile)
 {
     //upper and lower bounds
     int min = avgInput - 30;
