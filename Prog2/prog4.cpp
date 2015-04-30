@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         //getting actual time_arrived
         currDoc.time_arrived = currDoc.time_arrived + prevArrived;
         //still need to fix idle time
-        if (currDoc.time_arrived > clock)
+        if (currDoc.time_arrived >= clock)
         {
             idleTime = idleTime + (currDoc.time_arrived - clock);
             idle = currDoc.time_arrived - clock;
