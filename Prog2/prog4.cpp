@@ -2,15 +2,15 @@
 
 int main(int argc, char *argv[])
 {
-    bool generateRandom = false;
     ifstream arrivalFile;
     ifstream pageFile;
+    bool generateRandom = false;
     int avgInput;
     int secondsPerPage;
+    int error;
     int idleTime = 0;
     int numOfDocs = 0;
     int clock = 0;
-    int error;
     int timeDequeued = 0;
     int endPrint = 0;
     document currDoc;
@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
         return error;
     }
     if (!generateRandom && !openFiles(generateRandom, arrivalFile, pageFile))
-    {
         return 3;//unable to open files
+<<<<<<< HEAD
     }
 	int prevArrived = 0;
 	int idle = 0;
@@ -89,14 +89,36 @@ int main(int argc, char *argv[])
 		//endPrint in case no dequeue is necessary
 		endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
 		clock = endPrint;
+=======
+
+    while (clock < 28800)
+    {
+        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
+        if (q1.isEmpty())
+            idleTime += clock - endPrint;
+        q1.enqueue(currDoc);
+        q1.top(currDoc);
+        if (q1.size() == 1)
+            currDoc.time_started_print = currDoc.time_arrived;
+        else
+            currDoc.time_started_print = timeDequeued;
+        endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
+        while (endPrint < clock)
+        {
+            q1.dequeue(currDoc);
+            timeDequeued = endPrint;
+            numOfDocs++;
+            q1.top(currDoc);
+            currDoc.time_started_print = endPrint;
+            endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
+        }
+>>>>>>> 90919edbc8e5b04b3eb0a29ccb00db7d5a0da3ef
     }
 
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs, q1.size());
 
     if (!generateRandom)
-    {
         closeFiles(arrivalFile, pageFile);
-    }
     //program completed
     return 0;
 }
@@ -166,7 +188,6 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages)
             return false;
         }
     }
-
     return true;
 }
 
@@ -204,7 +225,7 @@ void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, i
 }
 
 void closeFiles(ifstream &arrival, ifstream &pages)
-{        //closing files
+{
     arrival.close();
     pages.close();
 }
