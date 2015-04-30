@@ -2,19 +2,19 @@
 
 int main(int argc, char *argv[])
 {
+    bool generateRandom = false;
     ifstream arrivalFile;
     ifstream pageFile;
-    bool generateRandom = false;
     int avgInput;
     int secondsPerPage;
-    int error;
     int idleTime = 0;
     int numOfDocs = 0;
     int clock = 0;
+    int error;
     int timeDequeued = 0;
     int endPrint = 0;
     document currDoc;
-	document deqDoc;
+    document deqDoc;
     myqueue<document> q1;
     srand((int)time(NULL));
 
@@ -24,101 +24,79 @@ int main(int argc, char *argv[])
     if (error != 0)
     {
         cout << "Please run as prog4.exe, time that documents arrive on "
-             << "average, number of seconds to print document, and whether to "
-             << "use randomly generated times and pages or to use provided "
-             << "files from arrivals.rand and pages.rand" << endl;
+            << "average, number of seconds to print document, and whether to "
+            << "use randomly generated times and pages or to use provided "
+            << "files from arrivals.rand and pages.rand" << endl;
         return error;
     }
     if (!generateRandom && !openFiles(generateRandom, arrivalFile, pageFile))
+    {
         return 3;//unable to open files
-<<<<<<< HEAD
     }
-	int prevArrived = 0;
-	int idle = 0;
-	int finishDoc = 0;
-	//program loop
-	while (clock < 28800)
-	{
-		//enters previous document's arrival time
-		if (clock != 0)
-		{
-			prevArrived = currDoc.time_arrived;
-		}
-		//getting data of next doc
-		getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
-		//getting actual time_arrived
-		currDoc.time_arrived = currDoc.time_arrived + prevArrived;
-			//still need to fix idle time
-			if (currDoc.time_arrived > clock)
-			{
-				idleTime = idleTime + (currDoc.time_arrived - clock);
-				idle = currDoc.time_arrived - clock;
-			}
-		//if queue is empty
-		if (q1.size() == 0)
-		{
-			currDoc.time_started_print = currDoc.time_arrived;
-		}
-		//if queue is not empty
-		if (q1.size() > 0)
-		{
-			if (currDoc.time_arrived < endPrint)
-			{
-				currDoc.time_started_print = endPrint;
-			}
-			else
-			currDoc.time_started_print = endPrint + idle;
-		}
-		//if start of program
-		if (clock == 0)
-		{
-			deqDoc = currDoc;
-			timeDequeued = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
-		}
-		//Dequeue Loop
-		while ((timeDequeued < currDoc.time_started_print) && (q1.size() > 0))
-		{
-			q1.dequeue(deqDoc);
-			numOfDocs++;
-			q1.top(deqDoc);
-			timeDequeued = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
-			endPrint = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
-		}
-		//enter into queue
-        q1.enqueue(currDoc);
-		//endPrint in case no dequeue is necessary
-		endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
-		clock = endPrint;
-=======
-
+    int prevArrived = 0;
+    int idle = 0;
+    int finishDoc = 0;
+    //program loop
     while (clock < 28800)
     {
-        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
-        if (q1.isEmpty())
-            idleTime += clock - endPrint;
-        q1.enqueue(currDoc);
-        q1.top(currDoc);
-        if (q1.size() == 1)
-            currDoc.time_started_print = currDoc.time_arrived;
-        else
-            currDoc.time_started_print = timeDequeued;
-        endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
-        while (endPrint < clock)
+        //enters previous document's arrival time
+        if (clock != 0)
         {
-            q1.dequeue(currDoc);
-            timeDequeued = endPrint;
-            numOfDocs++;
-            q1.top(currDoc);
-            currDoc.time_started_print = endPrint;
-            endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
+            prevArrived = currDoc.time_arrived;
         }
->>>>>>> 90919edbc8e5b04b3eb0a29ccb00db7d5a0da3ef
+        //getting data of next doc
+        getData(generateRandom, avgInput, secondsPerPage, currDoc, arrivalFile, pageFile, clock);
+        //getting actual time_arrived
+        currDoc.time_arrived = currDoc.time_arrived + prevArrived;
+        //still need to fix idle time
+        if (currDoc.time_arrived > clock)
+        {
+            idleTime = idleTime + (currDoc.time_arrived - clock);
+            idle = currDoc.time_arrived - clock;
+        }
+        //if queue is empty
+        if (q1.size() == 0)
+        {
+            currDoc.time_started_print = currDoc.time_arrived;
+        }
+        //if queue is not empty
+        if (q1.size() > 0)
+        {
+            if (currDoc.time_arrived < endPrint)
+            {
+                currDoc.time_started_print = endPrint;
+            }
+            else
+                currDoc.time_started_print = endPrint + idle;
+        }
+        //if start of program
+        if (clock == 0)
+        {
+            deqDoc = currDoc;
+            timeDequeued = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
+        }
+        //Dequeue Loop
+        while ((timeDequeued < currDoc.time_started_print) && (q1.size() > 0))
+        {
+            q1.dequeue(deqDoc);
+            numOfDocs++;
+            q1.top(deqDoc);
+            timeDequeued = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
+            endPrint = deqDoc.time_started_print + (deqDoc.pages * secondsPerPage);
+        }
+        //enter into queue
+        q1.enqueue(currDoc);
+        //endPrint in case no dequeue is necessary
+        endPrint = currDoc.time_started_print + (currDoc.pages * secondsPerPage);
+        clock = endPrint;
     }
 
     printStats(avgInput, secondsPerPage, idleTime, numOfDocs, q1.size());
 
     if (!generateRandom)
+    {
         closeFiles(arrivalFile, pageFile);
+    }
     //program completed
     return 0;
 }
@@ -188,6 +166,7 @@ bool openFiles(bool random, ifstream &arrival, ifstream &pages)
             return false;
         }
     }
+
     return true;
 }
 
@@ -225,7 +204,7 @@ void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, i
 }
 
 void closeFiles(ifstream &arrival, ifstream &pages)
-{
+{        //closing files
     arrival.close();
     pages.close();
 }
