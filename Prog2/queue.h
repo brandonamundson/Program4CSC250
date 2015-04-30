@@ -82,6 +82,9 @@ struct document
 
 int commandLineCheck(int argc, char *argv[], bool &dataLoc, int &avgInput, int &secondsPerPage);
 bool openFiles(bool random, ifstream &arrival, ifstream &pages);
+void simulatePrint(int &idleTime, int secondsPerPage, int avgInput,
+	int &numOfDocs, bool generateRandom, document &currDoc, document &deqDoc,
+	myqueue<document> &q1, ifstream &arrivalFile, ifstream &pageFile);
 void getData(bool generateRandom, int avgInput, int secondsPerPage, document &doc, ifstream &arrivalFile, ifstream &pageFile);
 void printStats(int avgInput, int secondsPerPage, int idleTime, int numOfDocs, int size);
 void closeFiles(ifstream &arrival, ifstream &pages);
